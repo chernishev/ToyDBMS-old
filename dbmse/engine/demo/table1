@@ -1,0 +1,10 @@
+4
+id description frequency groups
+INT STRING INT INT
+ASCENDING UNKNOWN UNKNOWN UNKNOWN
+0 cero 100 4
+1 uno 55 1
+2 dos 25 2
+3 tres 23 4
+4 cuatro 33 41
+5 cinco 56 12
