@@ -109,7 +109,7 @@ LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep
     for (int j = 0; j < tokeep.size(); j++){
       std::vector<std::string> source = left->fieldNames[i];
       std::string candidate = tokeep[j];
-      if(std::find(source.begin(), source.end(), candidate) == source.end()){
+      if(std::find(source.begin(), source.end(), candidate) != source.end()){
         fieldNames.push_back(source);
         fieldTypes.push_back(left->fieldTypes[i]);
         fieldOrders.push_back(left->fieldOrders[i]);
@@ -120,6 +120,7 @@ LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep
 }
 
 LProjectNode::~LProjectNode(){
+  delete left;
 }
 
 LSelectNode::LSelectNode(BaseTable& table,
@@ -142,11 +143,10 @@ BaseTable& LSelectNode::GetBaseTable(){
 }
 
 std::tuple<int, Predicate> LSelectNode::GetNextPredicate(){
-  if(predicates.size() == 0 || iteratorpos > predicates.size()){
+  if(predicates.size() == 0 || iteratorpos >= predicates.size()){
       return std::make_tuple(1, Predicate());
   }
-  iteratorpos++;
-  return std::make_tuple(0, predicates[iteratorpos]);
+  return std::make_tuple(0, predicates[iteratorpos++]);
 }
 
 void LSelectNode::ResetIterator(){

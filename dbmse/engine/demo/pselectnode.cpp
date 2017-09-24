@@ -29,7 +29,7 @@
 
 PSelectNode::PSelectNode(){}
 
-PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicates): PGetNextNode(){
+PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicate): PGetNextNode(){
   this->table = ((LSelectNode*)p)->GetBaseTable();
   this->predicate = predicate;
   this->prototype = p;
