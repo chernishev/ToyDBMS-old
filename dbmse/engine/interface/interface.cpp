@@ -142,11 +142,10 @@ BaseTable& LSelectNode::GetBaseTable(){
 }
 
 std::tuple<int, Predicate> LSelectNode::GetNextPredicate(){
-  if(predicates.size() == 0 || iteratorpos > predicates.size()){
+  if(predicates.size() == 0 || iteratorpos >= predicates.size()){
       return std::make_tuple(1, Predicate());
   }
-  iteratorpos++;
-  return std::make_tuple(0, predicates[iteratorpos]);
+  return std::make_tuple(0, predicates[iteratorpos++]);
 }
 
 void LSelectNode::ResetIterator(){
