@@ -120,6 +120,7 @@ LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep
 }
 
 LProjectNode::~LProjectNode(){
+  delete left;
 }
 
 LSelectNode::LSelectNode(BaseTable& table,
