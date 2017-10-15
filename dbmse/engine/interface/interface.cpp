@@ -19,16 +19,15 @@
 
 #include <algorithm>
 #include <tuple>
-#include <string.h>
 #include "interface.h"
+#include "../utils/utils.h"
 
 LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right){
   this->left = left;
   this->rigth = right;
 }
 
-LAbstractNode::~LAbstractNode(){
-}
+LAbstractNode::~LAbstractNode() = default;
 
 LAbstractNode* LAbstractNode::GetLeft(){
   return left;
@@ -36,6 +35,23 @@ LAbstractNode* LAbstractNode::GetLeft(){
 
 LAbstractNode* LAbstractNode::GetRight(){
   return rigth;
+}
+
+LCrossProductNode::LCrossProductNode(LAbstractNode* left, LAbstractNode* right)
+  :LAbstractNode(left, right) {
+  utils::append_to_back(fieldNames, left->fieldNames);
+  utils::append_to_back(fieldNames, right->fieldNames);
+
+  utils::append_to_back(fieldTypes, left->fieldTypes);
+  utils::append_to_back(fieldTypes, right->fieldTypes);
+
+  utils::append_to_back(fieldOrders, left->fieldOrders);
+  fieldOrders.insert(std::end(fieldOrders), right->fieldOrders.size(), CS_UNKNOWN);
+}
+
+LCrossProductNode::~LCrossProductNode() {
+  delete left;
+  delete rigth;
 }
 
 LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,

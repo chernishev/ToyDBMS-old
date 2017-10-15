@@ -42,7 +42,6 @@ PSelectNode::~PSelectNode(){
 }
 
 void PSelectNode::Initialize(){
-  int val = 0;
   std::string line, word;
   std::ifstream f(table.relpath);
   if(f.is_open()){

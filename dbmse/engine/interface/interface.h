@@ -48,7 +48,7 @@ class LAbstractNode{
 class LCrossProductNode : public LAbstractNode{
   public:
     LCrossProductNode(LAbstractNode* left, LAbstractNode* right);
-    ~LCrossProductNode();
+    ~LCrossProductNode() override;
 };
 
 class LJoinNode : public LAbstractNode{
