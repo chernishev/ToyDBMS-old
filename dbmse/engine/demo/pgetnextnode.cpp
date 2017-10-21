@@ -18,27 +18,28 @@
 // 0.2: first public release
 
 #include <tuple>
+#include <utility>
 
 #include "pgetnextnode.h"
 
-PGetNextNode::PGetNextNode(): PResultNode(NULL, NULL, NULL){
+PGetNextNode::PGetNextNode(): PResultNode(nullptr, nullptr, nullptr) {
   Initialize();
 }
 
-PGetNextNode::PGetNextNode(PResultNode* left, PResultNode* right, LAbstractNode* source):
-                                                                  PResultNode(left, right, source){
+PGetNextNode::PGetNextNode(std::unique_ptr<PResultNode> left_, std::unique_ptr<PResultNode> right_, LAbstractNode* source)
+  : PResultNode(std::move(left_), std::move(right_), source) {
   Initialize();
 }
 
-void PGetNextNode::Initialize(){
+void PGetNextNode::Initialize() {
   return;
 }
 
-std::vector<std::vector<Value>> PGetNextNode::GetNext(){
+std::vector<std::vector<Value>> PGetNextNode::GetNext() {
   return std::vector<std::vector<Value>>();
 }
 
-int PGetNextNode::GetAttrNum(){
+int PGetNextNode::GetAttrNum() {
   return prototype->fieldNames.size();
 }
 

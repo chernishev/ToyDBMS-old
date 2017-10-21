@@ -25,14 +25,15 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <memory>
 
 #include "basics.h"
 
 /* Logical nodes (query) */
 
-class LAbstractNode{
+class LAbstractNode {
   public:
-    LAbstractNode(LAbstractNode* left, LAbstractNode* right);
+    LAbstractNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right);
     virtual ~LAbstractNode();
     LAbstractNode* GetLeft();
     LAbstractNode* GetRight();
@@ -41,37 +42,34 @@ class LAbstractNode{
     std::vector<ValueType> fieldTypes;
     std::vector<COLUMN_SORT> fieldOrders;
   protected:
-    LAbstractNode* left;
-    LAbstractNode* rigth;
+    std::unique_ptr<LAbstractNode> left;
+    std::unique_ptr<LAbstractNode> right;
 };
 
-class LCrossProductNode : public LAbstractNode{
+class LCrossProductNode : public LAbstractNode {
   public:
-    LCrossProductNode(LAbstractNode* left, LAbstractNode* right);
-    ~LCrossProductNode();
+    LCrossProductNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right);
 };
 
-class LJoinNode : public LAbstractNode{
+class LJoinNode : public LAbstractNode {
   public:
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
-    LJoinNode(LAbstractNode* left, LAbstractNode* right, std::string offset1, std::string offset2, int memorylimit);
-    ~LJoinNode();
+    LJoinNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right, std::string offset1, std::string offset2, int memorylimit);
     // attributes to perform equi-join on
     std::string offset1, offset2;
     // maximum number of records permitted to present inside physical node
     int memorylimit;
 };
 
-class LProjectNode : public LAbstractNode{
+class LProjectNode : public LAbstractNode {
   public:
     // offsets to keep
-    LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep);
-    ~LProjectNode();
+    LProjectNode(std::unique_ptr<LAbstractNode> child, std::vector<std::string> tokeep);
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
     std::vector<std::string> offsets;
 };
 
-class LSelectNode : public LAbstractNode{
+class LSelectNode : public LAbstractNode {
   public:
     LSelectNode(BaseTable& table, std::vector<Predicate> predicates);
     // returns a reference to BaseTable
@@ -80,24 +78,22 @@ class LSelectNode : public LAbstractNode{
     std::tuple<int, Predicate> GetNextPredicate();
     // resets predicate iterator
     void ResetIterator();
-    ~LSelectNode();
   private:
     int iteratorpos;
     std::vector<Predicate> predicates;
     BaseTable table;
 };
 
-class LUniqueNode : public LAbstractNode{
+class LUniqueNode : public LAbstractNode {
   public:
-    LUniqueNode(LAbstractNode* child);
-    ~LUniqueNode();
+    LUniqueNode(std::unique_ptr<LAbstractNode> child);
 };
 
 // Physical node interface (result), should be used for automatic testing
 
-class PResultNode{
+class PResultNode {
   public:
-    PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p);
+    PResultNode(std::unique_ptr<PResultNode> left, std::unique_ptr<PResultNode> right, LAbstractNode* p);
     virtual ~PResultNode();
     // returns number of attributes
     virtual int GetAttrNum() = 0;
@@ -108,8 +104,8 @@ class PResultNode{
     // returns error status and data, if possible
     virtual std::tuple<ErrCode, std::vector<Value>> GetRecord();
   protected:
-    PResultNode* left;
-    PResultNode* right;
+    std::unique_ptr<PResultNode> left;
+    std::unique_ptr<PResultNode> right;
     std::vector<std::vector<Value>> data;
     int pos;
 };
