@@ -93,7 +93,7 @@ class LUniqueNode : public LAbstractNode {
 
 class PResultNode {
   public:
-    PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p);
+    PResultNode(std::unique_ptr<PResultNode> left, std::unique_ptr<PResultNode> right, LAbstractNode* p);
     virtual ~PResultNode();
     // returns number of attributes
     virtual int GetAttrNum() = 0;
@@ -104,8 +104,8 @@ class PResultNode {
     // returns error status and data, if possible
     virtual std::tuple<ErrCode, std::vector<Value>> GetRecord();
   protected:
-    PResultNode* left;
-    PResultNode* right;
+    std::unique_ptr<PResultNode> left;
+    std::unique_ptr<PResultNode> right;
     std::vector<std::vector<Value>> data;
     int pos;
 };

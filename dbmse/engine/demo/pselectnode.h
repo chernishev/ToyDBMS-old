@@ -28,7 +28,6 @@ class PSelectNode : public PGetNextNode {
   public:
     PSelectNode();
     PSelectNode(LAbstractNode* p, std::vector<Predicate> predicates);
-    ~PSelectNode();
     virtual std::vector<std::vector<Value>> GetNext();
     virtual void Initialize();
     // print node

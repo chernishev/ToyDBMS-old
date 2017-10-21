@@ -44,12 +44,12 @@ std::unique_ptr<PResultNode> QueryFactory(LAbstractNode* node) {
 
       LSelectNode* tmp = (LSelectNode*)(node->GetRight());
       std::vector<Predicate> p;
-      PSelectNode* rres = new PSelectNode(tmp, p);
+      std::unique_ptr<PSelectNode> rres(new PSelectNode(tmp, p));
 
       LSelectNode* tmp2 = (LSelectNode*)(node->GetLeft());
-      PSelectNode* lres = new PSelectNode(tmp2, p);
+      std::unique_ptr<PSelectNode> lres(new PSelectNode(tmp2, p));
 
-      return std::unique_ptr<PResultNode>(new PJoinNode(lres, rres, node));
+      return std::unique_ptr<PResultNode>(std::unique_ptr<PJoinNode>(new PJoinNode(std::move(lres), std::move(rres), node)));
     } else
       return nullptr;
 

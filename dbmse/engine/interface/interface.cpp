@@ -153,10 +153,8 @@ LUniqueNode::LUniqueNode(std::unique_ptr<LAbstractNode> child_): LAbstractNode(s
 
 /* Physical nodes*/
 
-PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p) {
-  this->left = left;
-  this->right = right;
-  this->prototype = p;
+PResultNode::PResultNode(std::unique_ptr<PResultNode> left_, std::unique_ptr<PResultNode> right_, LAbstractNode* p)
+  : left(std::move(left_)), right(std::move(right_)), prototype(p) {
   pos = 0;
 }
 

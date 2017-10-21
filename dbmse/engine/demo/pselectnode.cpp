@@ -38,9 +38,6 @@ PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicate): PG
   Initialize();
 }
 
-PSelectNode::~PSelectNode() {
-}
-
 void PSelectNode::Initialize() {
   int val = 0;
   std::string line, word;

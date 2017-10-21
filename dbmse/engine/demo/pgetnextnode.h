@@ -20,12 +20,13 @@
 #ifndef PGETNEXTNODE_H
 #define PGETNEXTNODE_H
 #include <vector>
+#include <memory>
 #include "../interface/interface.h"
 
 class PGetNextNode : public PResultNode {
   public:
     PGetNextNode();
-    PGetNextNode(PResultNode* left, PResultNode* right, LAbstractNode* p);
+    PGetNextNode(std::unique_ptr<PResultNode> left, std::unique_ptr<PResultNode> right, LAbstractNode* p);
     // internal way to transfer data
     virtual std::vector<std::vector<Value>> GetNext();
     // getting access to data

@@ -19,18 +19,14 @@
 
 #include<cstddef>
 #include<algorithm>
+#include<utility>
 
 #include "pjoinnode.h"
 
-PJoinNode::PJoinNode(PGetNextNode* left, PGetNextNode* right,
-                     LAbstractNode* p): PGetNextNode(left, right, p) {
+PJoinNode::PJoinNode(std::unique_ptr<PGetNextNode> left_, std::unique_ptr<PGetNextNode> right_,
+                     LAbstractNode* p): PGetNextNode(std::move(left_), std::move(right_), p) {
   pos = 0;
   Initialize();
-}
-
-PJoinNode::~PJoinNode() {
-  delete left;
-  delete right;
 }
 
 std::vector<std::vector<Value>> PJoinNode::GetNext() {
@@ -38,8 +34,8 @@ std::vector<std::vector<Value>> PJoinNode::GetNext() {
 }
 
 void PJoinNode::Initialize() {
-  PGetNextNode* l = (PGetNextNode*)left;
-  PGetNextNode* r = (PGetNextNode*)right;
+  PGetNextNode* l = (PGetNextNode*)left.get();
+  PGetNextNode* r = (PGetNextNode*)right.get();
   LAbstractNode* lp = l->prototype;
   LAbstractNode* rp = r->prototype;
   std::vector<std::vector<std::string>> ln = lp->fieldNames;

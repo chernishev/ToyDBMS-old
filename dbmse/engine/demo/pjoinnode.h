@@ -21,13 +21,13 @@
 #define PJOINNODE_H
 
 #include <vector>
+#include <memory>
 #include "../interface/interface.h"
 #include "pgetnextnode.h"
 
 class PJoinNode : public PGetNextNode {
   public:
-    PJoinNode(PGetNextNode* left, PGetNextNode* right, LAbstractNode* p);
-    ~PJoinNode();
+    PJoinNode(std::unique_ptr<PGetNextNode> left, std::unique_ptr<PGetNextNode> right, LAbstractNode* p);
     virtual std::vector<std::vector<Value>> GetNext();
     virtual void Initialize();
     virtual void Print(int indent);

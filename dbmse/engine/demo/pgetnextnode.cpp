@@ -18,6 +18,7 @@
 // 0.2: first public release
 
 #include <tuple>
+#include <utility>
 
 #include "pgetnextnode.h"
 
@@ -25,8 +26,8 @@ PGetNextNode::PGetNextNode(): PResultNode(nullptr, nullptr, nullptr) {
   Initialize();
 }
 
-PGetNextNode::PGetNextNode(PResultNode* left, PResultNode* right, LAbstractNode* source):
-  PResultNode(left, right, source) {
+PGetNextNode::PGetNextNode(std::unique_ptr<PResultNode> left_, std::unique_ptr<PResultNode> right_, LAbstractNode* source)
+  : PResultNode(std::move(left_), std::move(right_), source) {
   Initialize();
 }
 
