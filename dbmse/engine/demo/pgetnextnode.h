@@ -32,7 +32,7 @@ class PGetNextNode : public PResultNode {
     // getting access to data
     virtual void Initialize();
     // get number of attributes
-    virtual int GetAttrNum();
+    int GetAttrNum() override;
   protected:
 
   private:
