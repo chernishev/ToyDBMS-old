@@ -28,17 +28,17 @@
 #include "pjoinnode.h"
 
 // Here be rewriter and optimizer
-PResultNode* QueryFactory(LAbstractNode* node){
+PResultNode* QueryFactory(LAbstractNode* node) {
   // As of now, we handle only SELECTs with 0 predicates
   // Implementing conjunctive predicates is your homework
-  if(dynamic_cast<LSelectNode*>(node) != NULL){
+  if (dynamic_cast<LSelectNode*>(node) != NULL) {
     LSelectNode* tmp = (LSelectNode*)node;
     std::vector<Predicate> p;
     return new PSelectNode(tmp, p);
-  }else
-  // Also, only one join is possible
-  // Supporting more joins is also your (future) homework
-    if(dynamic_cast<LJoinNode*>(node) != NULL){
+  } else
+    // Also, only one join is possible
+    // Supporting more joins is also your (future) homework
+    if (dynamic_cast<LJoinNode*>(node) != NULL) {
 
       LSelectNode* tmp = (LSelectNode*)(node->GetRight());
       std::vector<Predicate> p;
@@ -48,21 +48,21 @@ PResultNode* QueryFactory(LAbstractNode* node){
       PSelectNode* lres = new PSelectNode(tmp2, p);
 
       return new PJoinNode(lres, rres, node);
-  }else
-  return NULL;
+    } else
+      return NULL;
 
 }
 
-void ExecuteQuery(PResultNode* query){
+void ExecuteQuery(PResultNode* query) {
   std::tuple<ErrCode, std::vector<Value>> res;
   res = query->GetRecord();
   ErrCode ec = std::get<0>(res);
   std::vector<Value> vals = std::get<1>(res);
-  while(ec == EC_OK){
-    for (int i = 0; i < query->GetAttrNum(); i++){
-      if(vals[i].vtype == VT_INT)
+  while (ec == EC_OK) {
+    for (int i = 0; i < query->GetAttrNum(); i++) {
+      if (vals[i].vtype == VT_INT)
         std::cout << vals[i].vint << " ";
-      else if(vals[i].vtype == VT_STRING)
+      else if (vals[i].vtype == VT_STRING)
         std::cout << vals[i].vstr << " ";
     }
     printf("\n");
@@ -73,7 +73,7 @@ void ExecuteQuery(PResultNode* query){
 
 }
 
-int main(){
+int main() {
   {
     std::cout << "Starting demo" << std::endl;
     std::cout << "Query1: plain select" << std::endl;
