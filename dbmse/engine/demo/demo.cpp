@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <typeinfo>
 #include <iostream>
+#include <memory>
+#include <utility>
 #include <vector>
 #include <tuple>
 #include "../interface/interface.h"
@@ -28,17 +30,17 @@
 #include "pjoinnode.h"
 
 // Here be rewriter and optimizer
-PResultNode* QueryFactory(LAbstractNode* node) {
+std::unique_ptr<PResultNode> QueryFactory(LAbstractNode* node) {
   // As of now, we handle only SELECTs with 0 predicates
   // Implementing conjunctive predicates is your homework
-  if (dynamic_cast<LSelectNode*>(node) != NULL) {
+  if (dynamic_cast<LSelectNode*>(node) != nullptr) {
     LSelectNode* tmp = (LSelectNode*)node;
     std::vector<Predicate> p;
-    return new PSelectNode(tmp, p);
+    return std::unique_ptr<PResultNode>(new PSelectNode(tmp, p));
   } else
     // Also, only one join is possible
     // Supporting more joins is also your (future) homework
-    if (dynamic_cast<LJoinNode*>(node) != NULL) {
+    if (dynamic_cast<LJoinNode*>(node) != nullptr) {
 
       LSelectNode* tmp = (LSelectNode*)(node->GetRight());
       std::vector<Predicate> p;
@@ -47,9 +49,9 @@ PResultNode* QueryFactory(LAbstractNode* node) {
       LSelectNode* tmp2 = (LSelectNode*)(node->GetLeft());
       PSelectNode* lres = new PSelectNode(tmp2, p);
 
-      return new PJoinNode(lres, rres, node);
+      return std::unique_ptr<PResultNode>(new PJoinNode(lres, rres, node));
     } else
-      return NULL;
+      return nullptr;
 
 }
 
@@ -79,12 +81,10 @@ int main() {
     std::cout << "Query1: plain select" << std::endl;
     BaseTable bt1 = BaseTable("table1");
     std::cout << bt1;
-    LAbstractNode* n1 = new LSelectNode(bt1, {});
-    PResultNode* q1 = QueryFactory(n1);
+    std::unique_ptr<LAbstractNode> n1(new LSelectNode(bt1, {}));
+    std::unique_ptr<PResultNode> q1 = QueryFactory(n1.get());
     q1->Print(0);
-    ExecuteQuery(q1);
-    delete n1;
-    delete q1;
+    ExecuteQuery(q1.get());
   }
 
   {
@@ -93,14 +93,12 @@ int main() {
     BaseTable bt2 = BaseTable("table2");
     std::cout << bt1;
     std::cout << bt2;
-    LAbstractNode* n1 = new LSelectNode(bt1, {});
-    LAbstractNode* n2 = new LSelectNode(bt2, {});
-    LJoinNode* n3 = new LJoinNode(n1, n2, "table1.id", "table2.id2", 666);
-    PResultNode* q1 = QueryFactory(n3);
+    std::unique_ptr<LAbstractNode> n1(new LSelectNode(bt1, {}));
+    std::unique_ptr<LAbstractNode> n2(new LSelectNode(bt2, {}));
+    std::unique_ptr<LJoinNode> n3(new LJoinNode(std::move(n1), std::move(n2), "table1.id", "table2.id2", 666));
+    std::unique_ptr<PResultNode> q1 = QueryFactory(n3.get());
     q1->Print(0);
-    ExecuteQuery(q1);
-    delete n3;
-    delete q1;
+    ExecuteQuery(q1.get());
   }
 
 }

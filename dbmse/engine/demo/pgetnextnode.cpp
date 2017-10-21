@@ -21,7 +21,7 @@
 
 #include "pgetnextnode.h"
 
-PGetNextNode::PGetNextNode(): PResultNode(NULL, NULL, NULL) {
+PGetNextNode::PGetNextNode(): PResultNode(nullptr, nullptr, nullptr) {
   Initialize();
 }
 

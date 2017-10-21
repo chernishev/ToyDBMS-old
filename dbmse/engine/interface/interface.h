@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <memory>
 
 #include "basics.h"
 
@@ -32,7 +33,7 @@
 
 class LAbstractNode {
   public:
-    LAbstractNode(LAbstractNode* left, LAbstractNode* right);
+    LAbstractNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right);
     virtual ~LAbstractNode();
     LAbstractNode* GetLeft();
     LAbstractNode* GetRight();
@@ -41,21 +42,19 @@ class LAbstractNode {
     std::vector<ValueType> fieldTypes;
     std::vector<COLUMN_SORT> fieldOrders;
   protected:
-    LAbstractNode* left;
-    LAbstractNode* right;
+    std::unique_ptr<LAbstractNode> left;
+    std::unique_ptr<LAbstractNode> right;
 };
 
 class LCrossProductNode : public LAbstractNode {
   public:
-    LCrossProductNode(LAbstractNode* left, LAbstractNode* right);
-    ~LCrossProductNode();
+    LCrossProductNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right);
 };
 
 class LJoinNode : public LAbstractNode {
   public:
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
-    LJoinNode(LAbstractNode* left, LAbstractNode* right, std::string offset1, std::string offset2, int memorylimit);
-    ~LJoinNode();
+    LJoinNode(std::unique_ptr<LAbstractNode> left, std::unique_ptr<LAbstractNode> right, std::string offset1, std::string offset2, int memorylimit);
     // attributes to perform equi-join on
     std::string offset1, offset2;
     // maximum number of records permitted to present inside physical node
@@ -65,8 +64,7 @@ class LJoinNode : public LAbstractNode {
 class LProjectNode : public LAbstractNode {
   public:
     // offsets to keep
-    LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep);
-    ~LProjectNode();
+    LProjectNode(std::unique_ptr<LAbstractNode> child, std::vector<std::string> tokeep);
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
     std::vector<std::string> offsets;
 };
@@ -80,7 +78,6 @@ class LSelectNode : public LAbstractNode {
     std::tuple<int, Predicate> GetNextPredicate();
     // resets predicate iterator
     void ResetIterator();
-    ~LSelectNode();
   private:
     int iteratorpos;
     std::vector<Predicate> predicates;
@@ -89,8 +86,7 @@ class LSelectNode : public LAbstractNode {
 
 class LUniqueNode : public LAbstractNode {
   public:
-    LUniqueNode(LAbstractNode* child);
-    ~LUniqueNode();
+    LUniqueNode(std::unique_ptr<LAbstractNode> child);
 };
 
 // Physical node interface (result), should be used for automatic testing

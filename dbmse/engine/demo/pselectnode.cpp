@@ -85,7 +85,7 @@ void PSelectNode::Print(int indent) {
     std::cout << predicate[0];
   else
     std::cout << "NULL" << std::endl;
-  if (left != NULL) left->Print(indent + 2);
-  if (right != NULL) right->Print(indent + 2);
+  if (left != nullptr) left->Print(indent + 2);
+  if (right != nullptr) right->Print(indent + 2);
 }
 

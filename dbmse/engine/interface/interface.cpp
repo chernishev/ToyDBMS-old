@@ -19,27 +19,29 @@
 
 #include <algorithm>
 #include <tuple>
+#include <utility>
 #include <string.h>
 #include "interface.h"
 
-LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right) {
-  this->left = left;
-  this->right = right;
+
+LAbstractNode::LAbstractNode(std::unique_ptr<LAbstractNode> left_, std::unique_ptr<LAbstractNode> right_)
+  : left(std::move(left_)), right(std::move(right_)) {
 }
 
 LAbstractNode::~LAbstractNode() {
 }
 
 LAbstractNode* LAbstractNode::GetLeft() {
-  return left;
+  return left.get();
 }
 
 LAbstractNode* LAbstractNode::GetRight() {
-  return right;
+  return right.get();
 }
 
-LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
-                     std::string offset1, std::string offset2, int memorylimit): LAbstractNode(left, right) {
+LJoinNode::LJoinNode(std::unique_ptr<LAbstractNode> left_, std::unique_ptr<LAbstractNode> right_,
+                     std::string offset1, std::string offset2, int memorylimit)
+  : LAbstractNode(std::move(left_), std::move(right_)) {
   this->offset1 = offset1;
   this->offset2 = offset2;
   this->memorylimit = memorylimit;
@@ -98,12 +100,8 @@ LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
 
 }
 
-LJoinNode::~LJoinNode() {
-  delete left;
-  delete right;
-}
-
-LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep): LAbstractNode(child, NULL) {
+LProjectNode::LProjectNode(std::unique_ptr<LAbstractNode> child_, std::vector<std::string> tokeep)
+  : LAbstractNode(std::move(child_), nullptr) {
   for (int i = 0; i < left->fieldNames.size(); i++) {
     for (int j = 0; j < tokeep.size(); j++) {
       std::vector<std::string> source = left->fieldNames[i];
@@ -118,12 +116,8 @@ LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep
   }
 }
 
-LProjectNode::~LProjectNode() {
-  delete left;
-}
-
 LSelectNode::LSelectNode(BaseTable& table,
-                         std::vector<Predicate> predicates): LAbstractNode(NULL, NULL) {
+                         std::vector<Predicate> predicates): LAbstractNode(nullptr, nullptr) {
   this->table = table;
   this->predicates = predicates;
   iteratorpos = 0;
@@ -153,13 +147,7 @@ void LSelectNode::ResetIterator() {
 }
 
 
-LSelectNode::~LSelectNode() {
-}
-
-LUniqueNode::LUniqueNode(LAbstractNode* child): LAbstractNode(child, NULL) {
-}
-
-LUniqueNode::~LUniqueNode() {
+LUniqueNode::LUniqueNode(std::unique_ptr<LAbstractNode> child_): LAbstractNode(std::move(child_), nullptr) {
 }
 
 
