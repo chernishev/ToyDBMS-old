@@ -42,7 +42,7 @@ class LAbstractNode{
     std::vector<COLUMN_SORT> fieldOrders;
   protected:
     LAbstractNode* left;
-    LAbstractNode* rigth;
+    LAbstractNode* right;
 };
 
 class LCrossProductNode : public LAbstractNode{

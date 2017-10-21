@@ -24,7 +24,7 @@
 
 LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right){
   this->left = left;
-  this->rigth = right;
+  this->right = right;
 }
 
 LAbstractNode::~LAbstractNode(){
@@ -35,7 +35,7 @@ LAbstractNode* LAbstractNode::GetLeft(){
 }
 
 LAbstractNode* LAbstractNode::GetRight(){
-  return rigth;
+  return right;
 }
 
 LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
@@ -101,7 +101,7 @@ LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
 
 LJoinNode::~LJoinNode(){
   delete left;
-  delete rigth;
+  delete right;
 }
 
 LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep):LAbstractNode(child, NULL){
