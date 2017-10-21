@@ -24,7 +24,7 @@
 #include "../interface/interface.h"
 #include "pgetnextnode.h"
 
-class PJoinNode : public PGetNextNode{
+class PJoinNode : public PGetNextNode {
   public:
     PJoinNode(PGetNextNode* left, PGetNextNode* right, LAbstractNode* p);
     ~PJoinNode();

@@ -22,7 +22,7 @@
 #include <vector>
 #include "../interface/interface.h"
 
-class PGetNextNode : public PResultNode{
+class PGetNextNode : public PResultNode {
   public:
     PGetNextNode();
     PGetNextNode(PResultNode* left, PResultNode* right, LAbstractNode* p);

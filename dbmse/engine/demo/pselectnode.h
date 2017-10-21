@@ -24,7 +24,7 @@
 #include "../interface/interface.h"
 #include "pgetnextnode.h"
 
-class PSelectNode : public PGetNextNode{
+class PSelectNode : public PGetNextNode {
   public:
     PSelectNode();
     PSelectNode(LAbstractNode* p, std::vector<Predicate> predicates);

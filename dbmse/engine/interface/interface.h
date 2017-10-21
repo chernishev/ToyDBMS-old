@@ -30,7 +30,7 @@
 
 /* Logical nodes (query) */
 
-class LAbstractNode{
+class LAbstractNode {
   public:
     LAbstractNode(LAbstractNode* left, LAbstractNode* right);
     virtual ~LAbstractNode();
@@ -45,13 +45,13 @@ class LAbstractNode{
     LAbstractNode* right;
 };
 
-class LCrossProductNode : public LAbstractNode{
+class LCrossProductNode : public LAbstractNode {
   public:
     LCrossProductNode(LAbstractNode* left, LAbstractNode* right);
     ~LCrossProductNode();
 };
 
-class LJoinNode : public LAbstractNode{
+class LJoinNode : public LAbstractNode {
   public:
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
     LJoinNode(LAbstractNode* left, LAbstractNode* right, std::string offset1, std::string offset2, int memorylimit);
@@ -62,7 +62,7 @@ class LJoinNode : public LAbstractNode{
     int memorylimit;
 };
 
-class LProjectNode : public LAbstractNode{
+class LProjectNode : public LAbstractNode {
   public:
     // offsets to keep
     LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep);
@@ -71,7 +71,7 @@ class LProjectNode : public LAbstractNode{
     std::vector<std::string> offsets;
 };
 
-class LSelectNode : public LAbstractNode{
+class LSelectNode : public LAbstractNode {
   public:
     LSelectNode(BaseTable& table, std::vector<Predicate> predicates);
     // returns a reference to BaseTable
@@ -87,7 +87,7 @@ class LSelectNode : public LAbstractNode{
     BaseTable table;
 };
 
-class LUniqueNode : public LAbstractNode{
+class LUniqueNode : public LAbstractNode {
   public:
     LUniqueNode(LAbstractNode* child);
     ~LUniqueNode();
@@ -95,7 +95,7 @@ class LUniqueNode : public LAbstractNode{
 
 // Physical node interface (result), should be used for automatic testing
 
-class PResultNode{
+class PResultNode {
   public:
     PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p);
     virtual ~PResultNode();

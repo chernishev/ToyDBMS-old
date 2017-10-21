@@ -22,24 +22,24 @@
 #include <string.h>
 #include "interface.h"
 
-LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right){
+LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right) {
   this->left = left;
   this->right = right;
 }
 
-LAbstractNode::~LAbstractNode(){
+LAbstractNode::~LAbstractNode() {
 }
 
-LAbstractNode* LAbstractNode::GetLeft(){
+LAbstractNode* LAbstractNode::GetLeft() {
   return left;
 }
 
-LAbstractNode* LAbstractNode::GetRight(){
+LAbstractNode* LAbstractNode::GetRight() {
   return right;
 }
 
 LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
-                     std::string offset1, std::string offset2, int memorylimit):LAbstractNode(left, right){
+                     std::string offset1, std::string offset2, int memorylimit): LAbstractNode(left, right) {
   this->offset1 = offset1;
   this->offset2 = offset2;
   this->memorylimit = memorylimit;
@@ -48,21 +48,20 @@ LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
   std::vector<std::string> match;
   ValueType vt;
   COLUMN_SORT cs;
-  for (int i = 0; i < left->fieldNames.size(); i++){
-    for (int j = 0; j < right->fieldNames.size(); j++){
+  for (int i = 0; i < left->fieldNames.size(); i++) {
+    for (int j = 0; j < right->fieldNames.size(); j++) {
       std::vector<std::string> l = left->fieldNames[i];
       std::vector<std::string> r = right->fieldNames[j];
 
-      if(std::find(l.begin(), l.end(), offset1) != l.end()){
-        if(std::find(r.begin(), r.end(), offset2) != r.end()){
+      if (std::find(l.begin(), l.end(), offset1) != l.end()) {
+        if (std::find(r.begin(), r.end(), offset2) != r.end()) {
           match = l;
           match.insert(std::end(match), std::begin(r), std::end(r));
           vt = left->fieldTypes[i];
           cs = left->fieldOrders[i];
         }
-      } else
-      if(std::find(l.begin(), l.end(), offset2) != l.end()){
-        if(std::find(r.begin(), r.end(), offset1) != r.end()){
+      } else if (std::find(l.begin(), l.end(), offset2) != l.end()) {
+        if (std::find(r.begin(), r.end(), offset1) != r.end()) {
           match = l;
           match.insert(std::end(match), std::begin(r), std::end(r));
           vt = left->fieldTypes[i];
@@ -72,20 +71,20 @@ LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
     }
   }
 
-  for (int i = 0; i < left->fieldNames.size(); i++){
+  for (int i = 0; i < left->fieldNames.size(); i++) {
     std::vector<std::string> l = left->fieldNames[i];
-    if(std::find(l.begin(), l.end(), offset1) == l.end())
-      if(std::find(l.begin(), l.end(), offset2) == l.end()){
+    if (std::find(l.begin(), l.end(), offset1) == l.end())
+      if (std::find(l.begin(), l.end(), offset2) == l.end()) {
         fieldNames.push_back(l);
         fieldTypes.push_back(left->fieldTypes[i]);
         fieldOrders.push_back(left->fieldOrders[i]);
       }
   }
 
-  for (int i = 0; i < right->fieldNames.size(); i++){
+  for (int i = 0; i < right->fieldNames.size(); i++) {
     std::vector<std::string> r = right->fieldNames[i];
-    if(std::find(r.begin(), r.end(), offset1) == r.end())
-      if(std::find(r.begin(), r.end(), offset2) == r.end()){
+    if (std::find(r.begin(), r.end(), offset1) == r.end())
+      if (std::find(r.begin(), r.end(), offset2) == r.end()) {
         fieldNames.push_back(r);
         fieldTypes.push_back(right->fieldTypes[i]);
         fieldOrders.push_back(right->fieldOrders[i]);
@@ -99,17 +98,17 @@ LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
 
 }
 
-LJoinNode::~LJoinNode(){
+LJoinNode::~LJoinNode() {
   delete left;
   delete right;
 }
 
-LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep):LAbstractNode(child, NULL){
-  for (int i = 0; i < left->fieldNames.size(); i++){
-    for (int j = 0; j < tokeep.size(); j++){
+LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep): LAbstractNode(child, NULL) {
+  for (int i = 0; i < left->fieldNames.size(); i++) {
+    for (int j = 0; j < tokeep.size(); j++) {
       std::vector<std::string> source = left->fieldNames[i];
       std::string candidate = tokeep[j];
-      if(std::find(source.begin(), source.end(), candidate) != source.end()){
+      if (std::find(source.begin(), source.end(), candidate) != source.end()) {
         fieldNames.push_back(source);
         fieldTypes.push_back(left->fieldTypes[i]);
         fieldOrders.push_back(left->fieldOrders[i]);
@@ -119,16 +118,16 @@ LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep
   }
 }
 
-LProjectNode::~LProjectNode(){
+LProjectNode::~LProjectNode() {
   delete left;
 }
 
 LSelectNode::LSelectNode(BaseTable& table,
-                         std::vector<Predicate> predicates): LAbstractNode(NULL, NULL){
+                         std::vector<Predicate> predicates): LAbstractNode(NULL, NULL) {
   this->table = table;
   this->predicates = predicates;
   iteratorpos = 0;
-  for (int i = 0; i < table.nbAttr; i++){
+  for (int i = 0; i < table.nbAttr; i++) {
     std::string tmp = table.relpath + "." + table.vnames[i];
     std::vector<std::string> tmp2;
     tmp2.push_back(tmp);
@@ -138,48 +137,48 @@ LSelectNode::LSelectNode(BaseTable& table,
   fieldOrders = table.vorders;
 }
 
-BaseTable& LSelectNode::GetBaseTable(){
+BaseTable& LSelectNode::GetBaseTable() {
   return table;
 }
 
-std::tuple<int, Predicate> LSelectNode::GetNextPredicate(){
-  if(predicates.size() == 0 || iteratorpos >= predicates.size()){
-      return std::make_tuple(1, Predicate());
+std::tuple<int, Predicate> LSelectNode::GetNextPredicate() {
+  if (predicates.size() == 0 || iteratorpos >= predicates.size()) {
+    return std::make_tuple(1, Predicate());
   }
   return std::make_tuple(0, predicates[iteratorpos++]);
 }
 
-void LSelectNode::ResetIterator(){
+void LSelectNode::ResetIterator() {
   iteratorpos = 0;
 }
 
 
-LSelectNode::~LSelectNode(){
+LSelectNode::~LSelectNode() {
 }
 
-LUniqueNode::LUniqueNode(LAbstractNode* child):LAbstractNode(child, NULL){
+LUniqueNode::LUniqueNode(LAbstractNode* child): LAbstractNode(child, NULL) {
 }
 
-LUniqueNode::~LUniqueNode(){
+LUniqueNode::~LUniqueNode() {
 }
 
 
 /* Physical nodes*/
 
-PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p){
+PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p) {
   this->left = left;
   this->right = right;
   this->prototype = p;
   pos = 0;
 }
 
-PResultNode::~PResultNode(){
+PResultNode::~PResultNode() {
 }
 
-std::tuple<ErrCode, std::vector<Value>> PResultNode::GetRecord(){
+std::tuple<ErrCode, std::vector<Value>> PResultNode::GetRecord() {
   std::vector<Value> vals;
   if (pos == data.size()) return std::make_tuple(EC_FINISH, vals);
-  for(int i = 0; i < GetAttrNum(); i++){
+  for (int i = 0; i < GetAttrNum(); i++) {
     vals.push_back(data[pos][i]);
   }
   pos++;

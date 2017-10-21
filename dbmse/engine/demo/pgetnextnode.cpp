@@ -21,24 +21,24 @@
 
 #include "pgetnextnode.h"
 
-PGetNextNode::PGetNextNode(): PResultNode(NULL, NULL, NULL){
+PGetNextNode::PGetNextNode(): PResultNode(NULL, NULL, NULL) {
   Initialize();
 }
 
 PGetNextNode::PGetNextNode(PResultNode* left, PResultNode* right, LAbstractNode* source):
-                                                                  PResultNode(left, right, source){
+  PResultNode(left, right, source) {
   Initialize();
 }
 
-void PGetNextNode::Initialize(){
+void PGetNextNode::Initialize() {
   return;
 }
 
-std::vector<std::vector<Value>> PGetNextNode::GetNext(){
+std::vector<std::vector<Value>> PGetNextNode::GetNext() {
   return std::vector<std::vector<Value>>();
 }
 
-int PGetNextNode::GetAttrNum(){
+int PGetNextNode::GetAttrNum() {
   return prototype->fieldNames.size();
 }
 
