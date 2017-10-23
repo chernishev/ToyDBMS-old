@@ -140,10 +140,11 @@ LProjectNode::~LProjectNode(){
 }
 
 LSelectNode::LSelectNode(BaseTable& table,
-                         std::vector<Predicate> predicates): LAbstractNode(NULL, NULL){
-  this->table = table;
-  this->predicates = predicates;
-  iteratorpos = 0;
+                         std::vector<Predicate> predicates)
+    : LAbstractNode(nullptr, nullptr)
+    , predicates(predicates)
+    , iteratorpos(0)
+    , table(table) {
   for (int i = 0; i < table.nbAttr; i++){
     std::string tmp = table.relpath + "." + table.vnames[i];
     std::vector<std::string> tmp2;
@@ -158,7 +159,7 @@ BaseTable& LSelectNode::GetBaseTable(){
   return table;
 }
 
-std::tuple<int, Predicate> LSelectNode::GetNextPredicate(){
+std::tuple<int, Predicate> LSelectNode::GetNextPredicate() {
   if(predicates.size() == 0 || iteratorpos >= predicates.size()){
       return std::make_tuple(1, Predicate());
   }
@@ -182,12 +183,8 @@ LUniqueNode::~LUniqueNode(){
 
 /* Physical nodes*/
 
-PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p){
-  this->left = left;
-  this->right = right;
-  this->prototype = p;
-  pos = 0;
-}
+PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p)
+    : prototype(p), left(left), right(right), pos(0) {}
 
 PResultNode::~PResultNode(){
 }
