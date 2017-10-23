@@ -4,7 +4,7 @@
 PCrossProductNode::PCrossProductNode(PGetNextNode* left, PGetNextNode* right, LCrossProductNode* source)
   : PGetNextNode(left, right, source) {
   const auto left_results = left->GetNext();
-  const auto right_results = left->GetNext();
+  const auto right_results = right->GetNext();
 
   for (const auto &left_result : left_results) {
     for (const auto &right_result : right_results) {
