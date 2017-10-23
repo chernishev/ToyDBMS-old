@@ -27,9 +27,9 @@
 
 #include "pselectnode.h"
 
-PSelectNode::PSelectNode(){}
+PSelectNode::PSelectNode() {}
 
-PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicate): PGetNextNode(){
+PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicate): PGetNextNode() {
   this->table = ((LSelectNode*)p)->GetBaseTable();
   this->predicate = predicate;
   this->prototype = p;
@@ -38,25 +38,22 @@ PSelectNode::PSelectNode(LAbstractNode* p, std::vector<Predicate> predicate): PG
   Initialize();
 }
 
-PSelectNode::~PSelectNode(){
-}
-
-void PSelectNode::Initialize(){
+void PSelectNode::Initialize() {
   int val = 0;
   std::string line, word;
   std::ifstream f(table.relpath);
-  if(f.is_open()){
+  if (f.is_open()) {
     // skipping first 4 lines
     getline(f, line);
     getline(f, line);
     getline(f, line);
     getline(f, line);
 
-    while(getline(f, line)){
+    while (getline(f, line)) {
       std::vector<Value> tmp;
       std::istringstream iss(line, std::istringstream::in);
       int i = 0;
-      while (iss >> word){
+      while (iss >> word) {
         // Yeah, no predicates :) -- Homework
         Value h;
         if (prototype->fieldTypes[i] == VT_INT)
@@ -72,20 +69,20 @@ void PSelectNode::Initialize(){
   } else std::cout << "Unable to open file";
 }
 
-std::vector<std::vector<Value>> PSelectNode::GetNext(){
+std::vector<std::vector<Value>> PSelectNode::GetNext() {
   return data;
 }
 
-void PSelectNode::Print(int indent){
-  for (int i = 0; i < indent; i++){
-    std::cout<<" ";
+void PSelectNode::Print(int indent) {
+  for (int i = 0; i < indent; i++) {
+    std::cout << " ";
   }
-  std::cout<<"SCAN "<<table.relpath<<" with predicate ";
-  if(predicate.size() != 0)
-    std::cout<<predicate[0];
+  std::cout << "SCAN " << table.relpath << " with predicate ";
+  if (predicate.size() != 0)
+    std::cout << predicate[0];
   else
-    std::cout<<"NULL"<<std::endl;
-  if(left != NULL) left->Print(indent + 2);
-  if(right != NULL) right->Print(indent + 2);
+    std::cout << "NULL" << std::endl;
+  if (left != nullptr) left->Print(indent + 2);
+  if (right != nullptr) right->Print(indent + 2);
 }
 

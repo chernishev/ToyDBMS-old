@@ -1,0 +1,9 @@
+--style=java
+--indent=spaces=2
+--indent-classes
+--align-pointer=type
+--align-reference=type
+--pad-oper
+--pad-comma
+--pad-header
+--convert-tabs
