@@ -31,32 +31,27 @@
 PResultNode* QueryFactory(LAbstractNode* node){
   // As of now, we handle only SELECTs with 0 predicates
   // Implementing conjunctive predicates is your homework
-  if(dynamic_cast<LSelectNode*>(node) != NULL){
+  if (dynamic_cast<LSelectNode*>(node) != NULL){
     LSelectNode* tmp = (LSelectNode*)node;
-    std::vector<Predicate> p;
+    std::vector<Predicate> p = ((LSelectNode*)node)->predicates;
     return new PSelectNode(tmp, p);
-  } else if(dynamic_cast<LJoinNode*>(node) != NULL) {
+  } else if (dynamic_cast<LJoinNode*>(node) != NULL) {
     // Also, only one join is possible
     // Supporting more joins is also your (future) homework
 
-    LSelectNode* tmp = (LSelectNode*)(node->GetRight());
-      std::vector<Predicate> p;
-      PSelectNode* rres = new PSelectNode(tmp, p);
+    LSelectNode* tmp = (LSelectNode*) (node->GetRight());
+    std::vector<Predicate> p;
+    PSelectNode* rres = new PSelectNode(tmp, p);
 
-      LSelectNode* tmp2 = (LSelectNode*)(node->GetLeft());
-      PSelectNode* lres = new PSelectNode(tmp2, p);
+    LSelectNode* tmp2 = (LSelectNode*) (node->GetLeft());
+    PSelectNode* lres = new PSelectNode(tmp2, p);
 
-      return new PJoinNode(lres, rres, node);
+    return new PJoinNode(lres, rres, node);
   } else if (auto l_cross_product_node = dynamic_cast<LCrossProductNode*>(node)) {
-      LSelectNode* tmp = (LSelectNode*)(node->GetRight());
-      std::vector<Predicate> p;
-      PSelectNode* rres = new PSelectNode(tmp, p);
-
-      LSelectNode* tmp2 = (LSelectNode*)(node->GetLeft());
-      PSelectNode* lres = new PSelectNode(tmp2, p);
-
-      return new PCrossProductNode(lres, rres, l_cross_product_node);
-    }
+    PSelectNode* rres = dynamic_cast<PSelectNode*>(QueryFactory(node->GetRight()));
+    PSelectNode* lres = dynamic_cast<PSelectNode*>(QueryFactory(node->GetLeft()));
+    return new PCrossProductNode(lres, rres, l_cross_product_node);
+  }
   return nullptr;
 
 }
@@ -101,7 +96,10 @@ int main(){
     BaseTable bt2 = BaseTable("table2");
     std::cout << bt1;
     std::cout << bt2;
-    LAbstractNode* n1 = new LSelectNode(bt1, {});
+    std::vector<Predicate> predicates = {
+        Predicate(PT_EQUALS, VT_STRING, 1, 0, "cero")
+    };
+    LAbstractNode* n1 = new LSelectNode(bt1, predicates);
     LAbstractNode* n2 = new LSelectNode(bt2, {});
 //    LJoinNode* n3 = new LJoinNode(n1, n2, "table1.id", "table2.id2", 666);
     auto* n3 = new LCrossProductNode(n1, n2);
