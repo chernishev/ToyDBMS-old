@@ -81,9 +81,9 @@ class LSelectNode : public LAbstractNode{
     // resets predicate iterator
     void ResetIterator();
     ~LSelectNode();
-  private:
-    int iteratorpos;
     std::vector<Predicate> predicates;
+private:
+    int iteratorpos;
     BaseTable table;
 };
 
