@@ -47,27 +47,23 @@ void PJoinNode::Initialize() {
   std::ptrdiff_t lpos, rpos;
 
   for (int i = 0; i < lp->fieldNames.size(); i++) {
-    std::ptrdiff_t lpos1 = std::find(ln[i].begin(), ln[i].end(), ((LJoinNode*)prototype)->offset1) - ln[i].begin();
-    std::ptrdiff_t lpos2 = std::find(ln[i].begin(), ln[i].end(), ((LJoinNode*)prototype)->offset2) - ln[i].begin();
-
-    if (lpos1 <= ln.size() || lpos1 <= ln.size()) {
-      if (lpos1 < lpos2)
-        lpos = lpos1;
-      else
-        lpos = lpos2;
+    if (std::find(ln[i].begin(), ln[i].end(), ((LJoinNode*)prototype)->offset1) != ln[i].end()) {
+      lpos = i;
+      break;
+    }
+    if (std::find(ln[i].begin(), ln[i].end(), ((LJoinNode*)prototype)->offset2) != ln[i].end()) {
+      lpos = i;
       break;
     }
   }
 
   for (int i = 0; i < rp->fieldNames.size(); i++) {
-    std::ptrdiff_t rpos1 = std::find(rn[i].begin(), rn[i].end(), ((LJoinNode*)prototype)->offset1) - rn[i].begin();
-    std::ptrdiff_t rpos2 = std::find(rn[i].begin(), rn[i].end(), ((LJoinNode*)prototype)->offset2) - rn[i].begin();
-
-    if (rpos1 <= rn.size() || rpos1 <= rn.size()) {
-      if (rpos1 < rpos2)
-        rpos = rpos1;
-      else
-        rpos = rpos2;
+    if (std::find(rn[i].begin(), rn[i].end(), ((LJoinNode*)prototype)->offset1) != rn[i].end()) {
+      rpos = i;
+      break;
+    }
+    if (std::find(rn[i].begin(), rn[i].end(), ((LJoinNode*)prototype)->offset2) != rn[i].end()) {
+      rpos = i;
       break;
     }
   }
