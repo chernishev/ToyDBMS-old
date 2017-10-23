@@ -89,7 +89,7 @@ LJoinNode::LJoinNode(std::unique_ptr<LAbstractNode> left_, std::unique_ptr<LAbst
       if (std::find(r.begin(), r.end(), offset2) == r.end()) {
         fieldNames.push_back(r);
         fieldTypes.push_back(right->fieldTypes[i]);
-        fieldOrders.push_back(right->fieldOrders[i]);
+        fieldOrders.push_back(CS_UNKNOWN);
 
       }
 
