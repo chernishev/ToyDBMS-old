@@ -19,16 +19,15 @@
 
 #include <algorithm>
 #include <tuple>
-#include <string.h>
 #include "interface.h"
+#include "../utils/utils.h"
 
 LAbstractNode::LAbstractNode(LAbstractNode* left, LAbstractNode* right){
   this->left = left;
   this->rigth = right;
 }
 
-LAbstractNode::~LAbstractNode(){
-}
+LAbstractNode::~LAbstractNode() = default;
 
 LAbstractNode* LAbstractNode::GetLeft(){
   return left;
@@ -36,6 +35,23 @@ LAbstractNode* LAbstractNode::GetLeft(){
 
 LAbstractNode* LAbstractNode::GetRight(){
   return rigth;
+}
+
+LCrossProductNode::LCrossProductNode(LAbstractNode* left, LAbstractNode* right)
+  :LAbstractNode(left, right) {
+  utils::append_to_back(fieldNames, left->fieldNames);
+  utils::append_to_back(fieldNames, right->fieldNames);
+
+  utils::append_to_back(fieldTypes, left->fieldTypes);
+  utils::append_to_back(fieldTypes, right->fieldTypes);
+
+  utils::append_to_back(fieldOrders, left->fieldOrders);
+  fieldOrders.insert(std::end(fieldOrders), right->fieldOrders.size(), CS_UNKNOWN);
+}
+
+LCrossProductNode::~LCrossProductNode() {
+  delete left;
+  delete rigth;
 }
 
 LJoinNode::LJoinNode(LAbstractNode* left, LAbstractNode* right,
@@ -104,30 +120,12 @@ LJoinNode::~LJoinNode(){
   delete rigth;
 }
 
-LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep):LAbstractNode(child, NULL){
-  for (int i = 0; i < left->fieldNames.size(); i++){
-    for (int j = 0; j < tokeep.size(); j++){
-      std::vector<std::string> source = left->fieldNames[i];
-      std::string candidate = tokeep[j];
-      if(std::find(source.begin(), source.end(), candidate) != source.end()){
-        fieldNames.push_back(source);
-        fieldTypes.push_back(left->fieldTypes[i]);
-        fieldOrders.push_back(left->fieldOrders[i]);
-        continue;
-      }
-    }
-  }
-}
-
-LProjectNode::~LProjectNode(){
-  delete left;
-}
-
 LSelectNode::LSelectNode(BaseTable& table,
-                         std::vector<Predicate> predicates): LAbstractNode(NULL, NULL){
-  this->table = table;
-  this->predicates = predicates;
-  iteratorpos = 0;
+                         std::vector<Predicate> predicates)
+    : LAbstractNode(nullptr, nullptr)
+    , predicates(predicates)
+    , iteratorpos(0)
+    , table(table) {
   for (int i = 0; i < table.nbAttr; i++){
     std::string tmp = table.relpath + "." + table.vnames[i];
     std::vector<std::string> tmp2;
@@ -142,7 +140,7 @@ BaseTable& LSelectNode::GetBaseTable(){
   return table;
 }
 
-std::tuple<int, Predicate> LSelectNode::GetNextPredicate(){
+std::tuple<int, Predicate> LSelectNode::GetNextPredicate() {
   if(predicates.size() == 0 || iteratorpos >= predicates.size()){
       return std::make_tuple(1, Predicate());
   }
@@ -166,12 +164,8 @@ LUniqueNode::~LUniqueNode(){
 
 /* Physical nodes*/
 
-PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p){
-  this->left = left;
-  this->right = right;
-  this->prototype = p;
-  pos = 0;
-}
+PResultNode::PResultNode(PResultNode* left, PResultNode* right, LAbstractNode* p)
+    : prototype(p), left(left), right(right), pos(0) {}
 
 PResultNode::~PResultNode(){
 }

@@ -17,7 +17,6 @@
 //      3) contract contains print methods for physical and logical nodes
 // 0.2: first public release
 
-#include <stdio.h>
 #include <typeinfo>
 #include <iostream>
 #include <vector>
@@ -26,30 +25,36 @@
 #include "../interface/basics.h"
 #include "pselectnode.h"
 #include "pjoinnode.h"
+#include "pcrossproductnode.h"
+#include "pprojectnode.h"
 
 // Here be rewriter and optimizer
 PResultNode* QueryFactory(LAbstractNode* node){
-  // As of now, we handle only SELECTs with 0 predicates
-  // Implementing conjunctive predicates is your homework
-  if(dynamic_cast<LSelectNode*>(node) != NULL){
-    LSelectNode* tmp = (LSelectNode*)node;
-    std::vector<Predicate> p;
-    return new PSelectNode(tmp, p);
-  }else
-  // Also, only one join is possible
-  // Supporting more joins is also your (future) homework
-    if(dynamic_cast<LJoinNode*>(node) != NULL){
+  if (auto* selectNode = dynamic_cast<LSelectNode*>(node)){
+    std::vector<Predicate> p = selectNode->predicates;
+    return new PSelectNode(selectNode, p);
+  }
 
-      LSelectNode* tmp = (LSelectNode*)(node->GetRight());
-      std::vector<Predicate> p;
-      PSelectNode* rres = new PSelectNode(tmp, p);
+  if (auto* joinNode = dynamic_cast<LJoinNode*>(node)) {
+    auto* leftPNode = dynamic_cast<PGetNextNode*>(QueryFactory(joinNode->GetLeft()));
+    auto* leftRNode = dynamic_cast<PGetNextNode*>(QueryFactory(joinNode->GetRight()));
 
-      LSelectNode* tmp2 = (LSelectNode*)(node->GetLeft());
-      PSelectNode* lres = new PSelectNode(tmp2, p);
+    return new PJoinNode(leftPNode, leftRNode, node);
+  }
 
-      return new PJoinNode(lres, rres, node);
-  }else
-  return NULL;
+  if (auto* l_cross_product_node = dynamic_cast<LCrossProductNode*>(node)) {
+    auto* rres = dynamic_cast<PGetNextNode*>(QueryFactory(node->GetRight()));
+    auto* lres = dynamic_cast<PGetNextNode*>(QueryFactory(node->GetLeft()));
+
+    return new PCrossProductNode(lres, rres, l_cross_product_node);
+  }
+
+  if (auto l_project_node = dynamic_cast<LProjectNode*>(node)) {
+    auto next = dynamic_cast<PGetNextNode*>(QueryFactory(l_project_node->GetLeft()));
+    return new PProjectNode(next, l_project_node);
+  }
+
+  return nullptr;
 
 }
 
@@ -93,14 +98,37 @@ int main(){
     BaseTable bt2 = BaseTable("table2");
     std::cout << bt1;
     std::cout << bt2;
-    LAbstractNode* n1 = new LSelectNode(bt1, {});
+    std::vector<Predicate> predicates = {
+        Predicate(PT_EQUALS, VT_STRING, 1, 0, "cero")
+    };
+    LAbstractNode* n1 = new LSelectNode(bt1, predicates);
     LAbstractNode* n2 = new LSelectNode(bt2, {});
-    LJoinNode* n3 = new LJoinNode(n1, n2, "table1.id", "table2.id2", 666);
+//    LJoinNode* n3 = new LJoinNode(n1, n2, "table1.id", "table2.id2", 666);
+    auto* n3 = new LCrossProductNode(n1, n2);
     PResultNode* q1 = QueryFactory(n3);
+    std::cout << std::endl;
     q1->Print(0);
     ExecuteQuery(q1);
     delete n3;
     delete q1;
+  }
+
+  {
+    std::cout << std::endl;
+    BaseTable bt1 = BaseTable("table1");
+    BaseTable bt2 = BaseTable("table2");
+    std::cout << bt1;
+    std::cout << bt2;
+    std::vector<Predicate> predicates = {
+        Predicate(PT_EQUALS, VT_STRING, 1, 0, "cero")
+    };
+    LAbstractNode* n1 = new LSelectNode(bt1, predicates);
+    LAbstractNode* n2 = new LSelectNode(bt2, {});
+
+    LProjectNode* p1 = new LProjectNode(n1, {"table1.description", "table1.frequency"});
+    PResultNode* q1 = QueryFactory(p1);
+    q1->Print(0);
+    ExecuteQuery(q1);
   }
 
 }

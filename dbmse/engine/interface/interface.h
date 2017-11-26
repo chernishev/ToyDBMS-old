@@ -48,7 +48,7 @@ class LAbstractNode{
 class LCrossProductNode : public LAbstractNode{
   public:
     LCrossProductNode(LAbstractNode* left, LAbstractNode* right);
-    ~LCrossProductNode();
+    ~LCrossProductNode() override;
 };
 
 class LJoinNode : public LAbstractNode{
@@ -67,8 +67,9 @@ class LProjectNode : public LAbstractNode{
     // offsets to keep
     LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep);
     ~LProjectNode();
+
     // offsets are defined as "TableName.AttributeName" so, ensure there is no duplicates
-    std::vector<std::string> offsets;
+    std::vector<size_t> offsets;
 };
 
 class LSelectNode : public LAbstractNode{
@@ -81,9 +82,9 @@ class LSelectNode : public LAbstractNode{
     // resets predicate iterator
     void ResetIterator();
     ~LSelectNode();
-  private:
-    int iteratorpos;
     std::vector<Predicate> predicates;
+private:
+    int iteratorpos;
     BaseTable table;
 };
 

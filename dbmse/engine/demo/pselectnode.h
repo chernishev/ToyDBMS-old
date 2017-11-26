@@ -26,16 +26,16 @@
 
 class PSelectNode : public PGetNextNode{
   public:
-    PSelectNode();
+    PSelectNode() = default;
     PSelectNode(LAbstractNode* p, std::vector<Predicate> predicates);
-    ~PSelectNode();
-    virtual std::vector<std::vector<Value>> GetNext();
-    virtual void Initialize();
+    ~PSelectNode() override = default;
+    std::vector<std::vector<Value>> GetNext() override;
+    void Initialize() override;
     // print node
-    virtual void Print(int indent);
+    virtual void Print(int indent) override;
   private:
     BaseTable table;
-    std::vector<Predicate> predicate;
+    std::vector<Predicate> predicates;
     int pos;
 };
 

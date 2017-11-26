@@ -97,10 +97,11 @@ struct Predicate{
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Predicate& p){
+  stream << "[" << p.attribute << "]";
   if (p.ptype == PT_EQUALS)
-    stream << "x == ";
+    stream << " == ";
   else
-    stream << "x < ";
+    stream << " < ";
 
   if(p.vtype == VT_INT)
       stream << p.vint;
