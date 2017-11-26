@@ -120,25 +120,6 @@ LJoinNode::~LJoinNode(){
   delete rigth;
 }
 
-LProjectNode::LProjectNode(LAbstractNode* child, std::vector<std::string> tokeep):LAbstractNode(child, NULL){
-  for (int i = 0; i < left->fieldNames.size(); i++){
-    for (int j = 0; j < tokeep.size(); j++){
-      std::vector<std::string> source = left->fieldNames[i];
-      std::string candidate = tokeep[j];
-      if(std::find(source.begin(), source.end(), candidate) != source.end()){
-        fieldNames.push_back(source);
-        fieldTypes.push_back(left->fieldTypes[i]);
-        fieldOrders.push_back(left->fieldOrders[i]);
-        continue;
-      }
-    }
-  }
-}
-
-LProjectNode::~LProjectNode(){
-  delete left;
-}
-
 LSelectNode::LSelectNode(BaseTable& table,
                          std::vector<Predicate> predicates)
     : LAbstractNode(nullptr, nullptr)
